@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mini Game Quiz – Minsu</title>
+  <title>Mini Game Quiz  Minsu</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
@@ -37,7 +37,7 @@
     .logo img { width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.8); }
     .logo h3 { color:#fff;font-size:17px;font-weight:800;letter-spacing:1px; }
 
-    /* Hamburger */
+    /* Hamburger menu */
     #hamburger {
       display:none; flex-direction:column; gap:5px; cursor:pointer;
       padding:5px; background:none; border:none; flex-shrink:0;
@@ -61,30 +61,7 @@
     .admin-nav-link { display:none !important; }
     .admin-nav-link.show { display:inline-block !important; }
 
-    /* FB Button */
-    #fbNavBtn {
-      display:flex; align-items:center; gap:7px;
-      padding:8px 13px; border-radius:20px;
-      background:#1877F2; color:#fff;
-      border:none; font-size:13px; font-weight:700;
-      cursor:pointer; white-space:nowrap; transition:0.2s; flex-shrink:0;
-    }
-    #fbNavBtn:hover{background:#0d5dba;}
-    #fbNavBtn:active{transform:scale(0.97);}
-    #fbNavBtn svg{width:17px;height:17px;fill:#fff;flex-shrink:0;}
-
-    /* User Info */
-    #userInfo {
-      display:none; align-items:center; gap:7px;
-      background:rgba(255,255,255,0.18); border-radius:20px;
-      padding:5px 11px 5px 6px; flex-shrink:0;
-    }
-    #userInfo.show{display:flex;}
-    #fbAvatar{width:27px;height:27px;border-radius:50%;border:2px solid #fff;}
-    #fbNameSpan{color:#fff;font-size:13px;font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    #logoutBtn{background:rgba(255,255,255,0.25);border:none;color:#fff;padding:3px 9px;border-radius:10px;font-size:11px;cursor:pointer;transition:0.2s;}
-    #logoutBtn:hover{background:rgba(255,255,255,0.4);}
-
+   
     /* Mobile nav */
     @media(max-width:660px){
       #hamburger{display:flex;}
@@ -178,11 +155,6 @@
     .feedback-section h3{color:#00a651;margin-bottom:14px;}
     .feedback-form{display:flex;flex-direction:column;gap:10px;}
     .feedback-list{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
-    .fb-item{background:#f4fcf7;border-left:4px solid #00a651;padding:10px 14px;border-radius:10px;}
-    .fb-item .fb-name{font-weight:700;color:#00a651;margin-bottom:3px;font-size:14px;}
-    .fb-item .fb-msg{color:#444;font-size:14px;}
-    .fb-empty{font-size:13px;color:#aaa;text-align:center;padding:12px 0;}
-    .del-fb{float:right;background:#e74c3c;color:#fff;border:none;border-radius:8px;padding:2px 9px;font-size:12px;cursor:pointer;margin-left:8px;}
     #feedbackThankYou{color:#999;font-size:13px;margin-top:12px;text-align:center;}
 
     /* ===== ADMIN ===== */
@@ -202,22 +174,7 @@
     .ans-entry input[type=text]{flex:1;}
     .ans-entry input[type=radio]{accent-color:#00a651;width:18px;height:18px;flex-shrink:0;}
 
-    /* ===== COMPETITION ===== */
-    .comp-wrap{max-width:520px;margin:0 auto;width:100%;}
-    .comp-lobby{text-align:center;}
-    .comp-lobby h2{color:#1b4332;font-size:clamp(19px,6vw,27px);margin-bottom:8px;}
-    .comp-players{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0;}
-    .comp-chip{display:flex;align-items:center;gap:7px;background:#d8f3dc;border-radius:20px;padding:7px 14px;font-weight:600;font-size:13px;color:#1b4332;}
-    .comp-chip img{width:24px;height:24px;border-radius:50%;}
-    .comp-scoreboard{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 18px rgba(0,166,81,0.12);margin-bottom:14px;}
-    .comp-scoreboard h4{color:#00a651;margin-bottom:10px;font-size:15px;}
-    .comp-score-row{display:flex;justify-content:space-between;padding:8px 10px;border-radius:9px;font-size:14px;margin:3px 0;}
-    .comp-score-row.top{background:#d8f3dc;font-weight:700;color:#1b4332;}
-    .comp-status{text-align:center;font-size:15px;font-weight:600;color:#1b4332;margin:12px 0;}
-    .mode-pills{display:flex;gap:10px;justify-content:center;margin:18px 0 20px;flex-wrap:wrap;}
-    .mode-pill{padding:9px 22px;border-radius:22px;cursor:pointer;font-weight:700;font-size:14px;border:2px solid #00a651;color:#00a651;background:#fff;transition:0.2s;}
-    .mode-pill.active,.mode-pill:hover{background:#00a651;color:#fff;}
-
+    
     /* ===== TOAST ===== */
     #toast{
       position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
@@ -258,24 +215,15 @@
   <button id="hamburger" onclick="toggleMenu()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
-
+<!--- Top button -->
   <div id="navDrawer">
     <nav>
-      <a class="link active" data-tab="home">🏠 Home</a>
-      <a class="link" data-tab="about">ℹ️ About</a>
-      <a class="link" data-tab="leader">🏆 Scores</a>
-      <a class="link" data-tab="comp">⚔️ Compete</a>
-      <a class="link admin-nav-link" data-tab="admin">🔑 Admin</a>
+      <a class="link active" data-tab="home">Home</a>
+      <a class="link" data-tab="about">About</a>
+      <a class="link" data-tab="leader">Scores</a>
+      <a class="link admin-nav-link" data-tab="admin">Admin</a>
     </nav>
-    <button id="fbNavBtn" onclick="fbLogin()">
-      <svg viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-      Facebook Login
-    </button>
-    <div id="userInfo">
-      <img id="fbAvatar" src="" alt="avatar">
-      <span id="fbNameSpan"></span>
-      <button id="logoutBtn" onclick="fbLogout()">Logout</button>
-    </div>
+    
   </div>
 </header>
 
@@ -284,15 +232,12 @@
   <div class="hero">
     <span class="big">MINI GAME</span>
     <div id="welcomeMsg" style="display:none;margin-top:14px;font-size:15px;font-weight:700;color:#1b4332;">
-      👋 Welcome, <span id="welcomeName" style="color:#00a651;"></span>!
+     Welcome, <span id="welcomeName" style="color:#00a651;"></span>!
     </div>
     <div style="margin-top:22px;max-width:280px;margin-left:auto;margin-right:auto;">
       <input id="playerName" type="text" placeholder="Enter your name" maxlength="30">
     </div>
-    <div class="mode-pills">
-      <div class="mode-pill active" id="modeSolo" onclick="setMode('solo')">🎮 Solo</div>
-      <div class="mode-pill" id="modeComp" onclick="setMode('comp')">⚔️ Competition</div>
-    </div>
+    <br>
     <button class="btn" onclick="startGame()" style="font-size:15px;padding:12px 32px;">▶ Start Game</button>
   </div>
 </section>
@@ -305,7 +250,7 @@
     <p>A Filipino linguistics quiz game that combines learning and programming.</p>
   </div>
   <div class="feedback-section card" style="margin-top:14px;">
-    <h3>💬 Leave Feedback</h3>
+    <h3>💬Leave Feedback</h3>
     <div class="feedback-form">
       <input id="feedbackName" type="text" placeholder="Your name" maxlength="30">
       <textarea id="feedbackMsg" rows="3" placeholder="Write your feedback here..."></textarea>
@@ -313,7 +258,7 @@
     </div>
     <div id="adminFbView" style="display:none;">
       <hr class="div">
-      <h4 style="color:#00a651;margin-bottom:10px;">📋 Feedbacks (Admin Only)</h4>
+      <h4 style="color:#00a651;margin-bottom:10px;">Feedbacks (Admin Only)</h4>
       <div class="feedback-list" id="feedbackList"></div>
     </div>
     <p id="feedbackThankYou">Feedback is reviewed by the admin only.</p>
@@ -330,49 +275,7 @@
     <p id="score-line">Score: <strong id="score">0</strong></p>
   </div>
 </section>
-
-<!-- ===== COMPETITION ===== -->
-<section id="comp" class="tab">
-  <div class="comp-wrap">
-    <div id="compLobby" class="comp-lobby">
-      <h2>⚔️ Competition Mode</h2>
-      <p style="color:#555;font-size:14px;margin-bottom:18px;">Race against others! Mag-login sa Facebook para makasali.</p>
-      <div id="compNeedLogin">
-        <p style="color:#e74c3c;font-weight:700;margin-bottom:12px;">⚠️ Login with Facebook first</p>
-        <button class="btn" onclick="fbLogin()">
-          <svg viewBox="0 0 24 24" style="width:17px;height:17px;fill:#fff;flex-shrink:0;"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-          Login with Facebook
-        </button>
-      </div>
-      <div id="compReady" style="display:none;">
-        <p style="font-size:14px;color:#1b4332;font-weight:700;margin-bottom:10px;">
-          Playing as: <span id="compPlayerName" style="color:#00a651;"></span>
-        </p>
-        <div class="comp-players" id="compChips"></div>
-        <div class="comp-scoreboard">
-          <h4>🏆 Session Scoreboard</h4>
-          <div id="lobbyRows"></div>
-        </div>
-        <div class="row-btns" style="justify-content:center;margin-top:4px;">
-          <button class="btn" onclick="startComp()">🚀 Start Competition</button>
-          <button class="btn grey sm" onclick="clearCP()">🔄 Reset</button>
-        </div>
-      </div>
-    </div>
-    <div id="compGameArea" style="display:none;">
-      <div class="comp-scoreboard">
-        <h4>🏆 Live Scoreboard</h4>
-        <div id="liveRows"></div>
-      </div>
-      <p class="comp-status" id="compStatus"></p>
-      <div class="game-box card" id="compGameBox">
-        <div class="timer-bar" id="compBar"></div>
-        <p id="compProgress"></p>
-        <h3 id="compQ"></h3>
-        <div class="answers" id="compAns"></div>
-        <p id="score-line">Score: <strong id="compScore">0</strong></p>
-      </div>
-    </div>
+    
   </div>
 </section>
 
@@ -380,11 +283,11 @@
 <section id="leader" class="tab">
   <div class="leader-wrap">
     <p class="sec-title">🏆 Leaderboard</p>
-    <p class="sec-sub">Top players all-time</p>
+    <p class="sec-sub">Mga nangungunang manlalaro sa lahat ng oras</p>
     <ul id="leaderboard"></ul>
     <div class="admin-controls">
-      <button class="btn sm grey" onclick="goTab('admin')">🔑 Admin</button>
-      <button class="btn sm danger" id="adminResetBtn" onclick="adminReset()" style="display:none;">🗑 Reset</button>
+      <button class="btn sm grey" onclick="goTab('admin')">🔑Admin</button>
+      <button class="btn sm danger" id="adminResetBtn" onclick="adminReset()" style="display:none;">Reset</button>
     </div>
   </div>
 </section>
@@ -393,7 +296,7 @@
 <section id="admin" class="tab">
   <div class="admin-wrap">
     <div id="adminGate" class="card">
-      <h2 style="color:#00a651;margin-bottom:16px;">🔑 Admin Login</h2>
+      <h2 style="color:#00a651;margin-bottom:16px;">🔑Admin Login</h2>
       <div class="admin-login-form">
         <input type="password" id="adminPass" placeholder="Password" onkeyup="if(event.key==='Enter')doAdminLogin()">
         <button class="btn" onclick="doAdminLogin()">Login</button>
@@ -408,13 +311,13 @@
         </div>
       </div>
       <div class="card" style="margin-bottom:16px;">
-        <h3 style="color:#00a651;margin-bottom:12px;">💬 User Feedbacks</h3>
+        <h3 style="color:#00a651;margin-bottom:12px;">User Feedbacks</h3>
         <div class="feedback-list" id="adminFbList"></div>
       </div>
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
-          <h3 style="color:#00a651;">📝 Question Manager</h3>
-          <button class="btn sm grey" onclick="shuffleAllAnswers()">🔀 Shuffle All</button>
+          <h3 style="color:#00a651;"> Question Manager</h3>
+          <button class="btn sm grey" onclick="shuffleAllAnswers()">Shuffle All</button>
         </div>
         <p style="font-size:12px;color:#888;margin-bottom:10px;">Select ✓ = correct answer. Hit Save after editing.</p>
         <div class="q-list" id="qList"></div>
@@ -424,10 +327,10 @@
             <label style="font-size:13px;font-weight:600;color:#1b4332;display:block;margin-bottom:6px;">Question</label>
             <input type="text" id="newQText" placeholder="Enter question text...">
           </div>
-          <label style="font-size:13px;font-weight:600;color:#1b4332;display:block;margin-bottom:8px;">Answers (select ✓ = correct)</label>
+          <label style="font-size:13px;font-weight:600;color:#1b4332;display:block;margin-bottom:8px;">Answers (select  = correct)</label>
           <div id="newAnsFields"></div>
           <div class="row-btns" style="margin-top:12px;">
-            <button class="btn sm" onclick="addQuestion()">✅ Add Question</button>
+            <button class="btn sm" onclick="addQuestion()">Add Question</button>
           </div>
         </div>
       </div>
@@ -439,47 +342,6 @@
   <p>© 2026 · Minsu Mini Game Quiz · Jhon Benedict Zulueta &amp; JohnPaul Songco</p>
 </footer>
 
-<!-- ===== FACEBOOK SDK (TUNAY) ===== -->
-<!--
-  PARA SA TUNAY NA FB LOGIN — SUNDAN ITO:
-  =========================================
-  1. Pumunta sa: https://developers.facebook.com/apps
-  2. Click "Create App" → piliin "Consumer" → Next
-  3. Ilagay ang App Name (e.g. "Minsu Quiz") → Create App
-  4. Sa dashboard, click "Add Product" → hanapin "Facebook Login" → Setup
-  5. Sa Facebook Login > Settings:
-     - Valid OAuth Redirect URIs: ilagay ang link ng iyong website (kailangan HTTPS)
-     - Halimbawa: https://yourdomain.com/index.html
-  6. Sa App Settings > Basic: kopyahin ang "App ID"
-  7. Palitan ang 'YOUR_FB_APP_ID' sa ibaba ng iyong App ID
-  8. I-host ang site sa HTTPS (Facebook requirement)
-  9. Para sa Live mode: i-submit ang app para sa review ng Facebook
-  =========================================
--->
-<div id="fb-root"></div>
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId   : 'YOUR_FB_APP_ID',  // <-- PALITAN NG IYONG APP ID MULA SA developers.facebook.com
-      cookie  : true,
-      xfbml   : true,
-      version : 'v19.0'
-    });
-    // Auto-restore session pagkatapos ng page reload
-    FB.getLoginStatus(function(response) {
-      if (response.status === 'connected') {
-        fetchFBProfile();
-      }
-    });
-  };
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_PH/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-</script>
 
 <script>
 /* ============================================================
@@ -567,83 +429,8 @@ function toast(m){const e=document.getElementById('toast');e.textContent=m;e.cla
 const sOk=new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3');
 const sBad=new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
 
-/* ============================================================
-   FACEBOOK LOGIN — TUNAY (gamit ang Official FB JS SDK)
-   ============================================================ */
-function fbLogin(){
-  if(typeof FB==='undefined'){
-    toast('⚠️ FB SDK hindi pa na-load. Siguraduhing may valid App ID ka at naka-HTTPS ang site.');
-    return;
-  }
-  FB.login(function(res){
-    if(res.authResponse){
-      fetchFBProfile();
-    } else {
-      toast('❌ Facebook login cancelled o denied.');
-    }
-  },{scope:'public_profile'});
-}
 
-function fetchFBProfile(){
-  // Kukunin: id, name, at profile picture (large)
-  FB.api('/me',{fields:'id,name,picture.type(large)'},function(res){
-    if(!res||res.error){toast('❌ Hindi makuha ang FB profile. Subukan ulit.');return;}
-    fbUser={
-      id    : res.id,
-      name  : res.name,
-      avatar: (res.picture&&res.picture.data)?res.picture.data.url:''
-    };
-    applyFBUser();
-  });
-}
 
-function applyFBUser(){
-  // Navbar: itago ang FB button, ipakita ang user info
-  document.getElementById('fbNavBtn').style.display='none';
-  const ui=document.getElementById('userInfo');
-  ui.classList.add('show');
-  if(fbUser.avatar){
-    document.getElementById('fbAvatar').src=fbUser.avatar;
-  } else {
-    document.getElementById('fbAvatar').style.display='none';
-  }
-  document.getElementById('fbNameSpan').textContent=fbUser.name;
-
-  // Home: pre-fill name, welcome message
-  document.getElementById('playerName').value=fbUser.name;
-  document.getElementById('welcomeName').textContent=fbUser.name;
-  document.getElementById('welcomeMsg').style.display='block';
-
-  // Competition tab
-  document.getElementById('compNeedLogin').style.display='none';
-  document.getElementById('compReady').style.display='block';
-  document.getElementById('compPlayerName').textContent=fbUser.name;
-
-  registerCP();
-  refreshLobby();
-  toast('✅ Naka-login bilang '+fbUser.name);
-}
-
-function fbLogout(){
-  fbUser=null;
-  document.getElementById('fbNavBtn').style.display='flex';
-  document.getElementById('userInfo').classList.remove('show');
-  document.getElementById('welcomeMsg').style.display='none';
-  document.getElementById('compNeedLogin').style.display='block';
-  document.getElementById('compReady').style.display='none';
-  document.getElementById('fbAvatar').style.display='inline-block';
-  if(typeof FB!=='undefined') FB.logout(function(){});
-  toast('👋 Naka-logout na.');
-}
-
-/* ============================================================
-   GAME MODE
-   ============================================================ */
-function setMode(m){
-  gameMode=m;
-  document.getElementById('modeSolo').classList.toggle('active',m==='solo');
-  document.getElementById('modeComp').classList.toggle('active',m==='comp');
-}
 
 /* ============================================================
    SOLO GAME
@@ -659,10 +446,7 @@ function startGame(){
   player=document.getElementById('playerName').value.trim();
   if(!player&&fbUser)player=fbUser.name;
   if(!player)return toast('⚠️ Ilagay ang iyong pangalan!');
-  if(gameMode==='comp'){
-    if(!fbUser)return toast('⚠️ Mag-login muna sa Facebook para sa Competition!');
-    goTab('comp');startComp();return;
-  }
+ 
   qs=shArr(getQs()).slice(0,15).map(mkQ);
   qi=0;sc=0;
   document.getElementById('score').textContent=0;
@@ -700,75 +484,8 @@ function shk(id){const e=document.getElementById(id);e.classList.add('shake');se
 /* ============================================================
    COMPETITION
    ============================================================ */
-let cqs=[],cqi=0,csc=0,ctmr=null,cL=10;
-function getCP(){try{return JSON.parse(localStorage.getItem('compPlayers'))||[];}catch(e){return[];}}
-function saveCP(a){localStorage.setItem('compPlayers',JSON.stringify(a));}
-function registerCP(){
-  if(!fbUser)return;
-  let cp=getCP();
-  if(!cp.find(p=>p.id===fbUser.id)){cp.push({id:fbUser.id,name:fbUser.name,avatar:fbUser.avatar,score:0,done:false});saveCP(cp);}
-}
-function clearCP(){localStorage.removeItem('compPlayers');refreshLobby();toast('🔄 Session reset!');}
 
-function refreshLobby(){
-  const cp=[...getCP()].sort((a,b)=>b.score-a.score);
-  const chips=document.getElementById('compChips');
-  chips.innerHTML='';
-  cp.forEach(p=>{const d=document.createElement('div');d.className='comp-chip';d.innerHTML=`${p.avatar?`<img src="${p.avatar}" alt="">`:''}${p.name}`;chips.appendChild(d);});
-  const rows=document.getElementById('lobbyRows');
-  rows.innerHTML='';
-  cp.forEach((p,i)=>{const d=document.createElement('div');d.className='comp-score-row'+(i===0?' top':'');d.innerHTML=`<span>${i===0?'👑 ':''}${p.name}${p.done?' ✅':''}</span><span>${p.score} pts</span>`;rows.appendChild(d);});
-}
 
-function startComp(){
-  if(!fbUser){toast('⚠️ Mag-login sa Facebook muna!');return;}
-  registerCP();
-  cqs=shArr(getQs()).slice(0,10).map(mkQ);
-  cqi=0;csc=0;
-  document.getElementById('compScore').textContent=0;
-  document.getElementById('compLobby').style.display='none';
-  document.getElementById('compGameArea').style.display='block';
-  updLive();loadCQ();
-}
-
-function loadCQ(){
-  clearInterval(ctmr);cL=10;
-  const b=document.getElementById('compBar');b.style.width='100%';b.classList.remove('danger');
-  document.getElementById('compQ').textContent=cqs[cqi].q;
-  document.getElementById('compProgress').textContent=`Tanong ${cqi+1} / ${cqs.length}`;
-  document.getElementById('compStatus').textContent='⏱ Sagutin bago maubos ang oras!';
-  const ans=document.getElementById('compAns');ans.innerHTML='';
-  cqs[cqi].a.forEach((c,i)=>{const b=document.createElement('button');b.textContent=c;b.onclick=()=>chkC(i,b);ans.appendChild(b);});
-  ctmr=setInterval(()=>{cL--;document.getElementById('compBar').style.width=(cL*10)+'%';if(cL<=3){document.getElementById('compBar').classList.add('danger');shk('compGameBox');}if(cL<=0)nxtCQ();},1000);
-}
-
-function chkC(i,btn){
-  clearInterval(ctmr);
-  if(i===cqs[cqi].c){csc++;btn.style.background='#00e87a';sOk.play();document.getElementById('compStatus').textContent='✅ Tama!';}
-  else{btn.style.background='#ff4d4d';sBad.play();document.getElementById('compStatus').textContent='❌ Mali!';}
-  document.getElementById('compScore').textContent=csc;
-  document.getElementById('compAns').querySelectorAll('button').forEach((b,j)=>{if(j===cqs[cqi].c)b.style.background='#00e87a';b.disabled=true;});
-  updMyScore(csc);updLive();setTimeout(nxtCQ,700);
-}
-
-function nxtCQ(){
-  cqi++;
-  if(cqi<cqs.length){loadCQ();}
-  else{
-    clearInterval(ctmr);markDone(csc);updLive();saveSc(fbUser.name,csc);
-    document.getElementById('compStatus').textContent=`🏁 Tapos! Score: ${csc}/${cqs.length}`;
-    toast(`🏆 Competition done! Score: ${csc}/${cqs.length}`);
-    setTimeout(()=>{document.getElementById('compLobby').style.display='block';document.getElementById('compGameArea').style.display='none';refreshLobby();goTab('leader');},2000);
-  }
-}
-
-function updMyScore(s){const cp=getCP(),me=cp.find(p=>p.id===fbUser.id);if(me)me.score=s;saveCP(cp);}
-function markDone(s){const cp=getCP(),me=cp.find(p=>p.id===fbUser.id);if(me){me.score=s;me.done=true;}saveCP(cp);}
-function updLive(){
-  const cp=[...getCP()].sort((a,b)=>b.score-a.score);
-  const rows=document.getElementById('liveRows');rows.innerHTML='';
-  cp.forEach((p,i)=>{const d=document.createElement('div');d.className='comp-score-row'+(i===0?' top':'');d.innerHTML=`<span>${i===0?'👑 ':''}${p.name}${p.done?' ✅':''}</span><span>${p.score} pts</span>`;rows.appendChild(d);});
-}
 
 /* ============================================================
    LEADERBOARD
@@ -799,9 +516,9 @@ function doAdminLogin(){
     document.getElementById('adminFbView').style.display='block';
     document.getElementById('feedbackThankYou').style.display='none';
     loadFbList();loadAdminFbList();renderQList();renderNewAnsFields();
-    toast('✅ Admin login successful!');
+    toast('Admin login successful!');
   } else {
-    toast('❌ Maling password!');
+    toast('Maling password!');
     document.getElementById('adminPass').value='';
   }
 }
@@ -851,7 +568,7 @@ function saveQ(qi){
   qArr[qi].a=qArr[qi].a.map((_,ai)=>document.getElementById(`qa_${qi}_${ai}`).value.trim());
   const ch=document.querySelector(`input[name="cr_${qi}"]:checked`);
   qArr[qi].c=ch?parseInt(ch.value):0;
-  saveQs(qArr);renderQList();toast('✅ Nasave!');
+  saveQs(qArr);renderQList();toast(' Nasave!');
 }
 function delQ(qi){
   if(!confirm('Delete this question?'))return;
@@ -860,12 +577,12 @@ function delQ(qi){
 function shfQ(qi){
   const qArr=getQs(),p=qArr[qi].a.map((a,i)=>({a,ok:i===qArr[qi].c})),s=shArr(p);
   qArr[qi].a=s.map(x=>x.a);qArr[qi].c=s.findIndex(x=>x.ok);
-  saveQs(qArr);renderQList();toast(`🔀 Shuffled Q${qi+1}`);
+  saveQs(qArr);renderQList();toast(`Shuffled Q${qi+1}`);
 }
 function shuffleAllAnswers(){
   let qArr=getQs();
   qArr=qArr.map(q=>{const p=q.a.map((a,i)=>({a,ok:i===q.c})),s=shArr(p);return{q:q.q,a:s.map(x=>x.a),c:s.findIndex(x=>x.ok)};});
-  saveQs(qArr);renderQList();toast('🔀 Lahat na-shuffle!');
+  saveQs(qArr);renderQList();toast('Lahat na-shuffle!');
 }
 function renderNewAnsFields(){
   const w=document.getElementById('newAnsFields');w.innerHTML='';
@@ -873,13 +590,13 @@ function renderNewAnsFields(){
 }
 function addQuestion(){
   const qt=document.getElementById('newQText').value.trim();
-  if(!qt)return toast('⚠️ Ilagay ang tanong!');
+  if(!qt)return toast('Ilagay ang tanong!');
   const ans=[];
   for(let i=0;i<4;i++){const v=document.getElementById(`na_${i}`).value.trim();if(!v)return toast(`⚠️ Punan ang Answer ${i+1}!`);ans.push(v);}
   const c=parseInt(document.querySelector('input[name="newC"]:checked').value);
   const qArr=getQs();qArr.push({q:qt,a:ans,c});saveQs(qArr);
   document.getElementById('newQText').value='';renderNewAnsFields();renderQList();
-  toast('✅ Naidagdag ang tanong!');
+  toast('Naidagdag ang tanong!');
 }
 
 /* ============================================================
@@ -888,14 +605,14 @@ function addQuestion(){
 function submitFeedback(){
   const name=document.getElementById('feedbackName').value.trim();
   const msg=document.getElementById('feedbackMsg').value.trim();
-  if(!name)return toast('⚠️ Ilagay ang pangalan!');
-  if(!msg)return toast('⚠️ Isulat ang feedback!');
+  if(!name)return toast('Ilagay ang pangalan!');
+  if(!msg)return toast('Isulat ang feedback!');
   const d=JSON.parse(localStorage.getItem('feedbacks'))||[];
   d.push({name,msg,date:new Date().toLocaleDateString('en-PH')});
   localStorage.setItem('feedbacks',JSON.stringify(d));
   document.getElementById('feedbackName').value='';
   document.getElementById('feedbackMsg').value='';
-  toast('✅ Salamat sa iyong feedback!');
+  toast('Salamat sa iyong feedback!');
   if(isAdmin){loadFbList();loadAdminFbList();}
 }
 function getFbs(){return JSON.parse(localStorage.getItem('feedbacks'))||[];}
