@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mini Game Quiz – Minsu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: linear-gradient(135deg, #b7e4c7, #95d5b2);
+      min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
+    }
+    #particles { position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none; }
+
+    @keyframes shake {
+      0%{transform:translate(2px,2px)}25%{transform:translate(-2px,0)}
+      50%{transform:translate(2px,-2px)}75%{transform:translate(-1px,2px)}100%{transform:translate(0,0)}
+    }
+    @keyframes fade {
+      from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)}
+    }
+    .shake { animation: shake 0.3s; }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:11px 18px; background:#00a651; position:sticky; top:0; z-index:1000;
+      box-shadow:0 3px 18px rgba(0,0,0,0.18); gap:10px;
+    }
+    .logo { display:flex; align-items:center; gap:9px; flex-shrink:0; }
+    .logo img { width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.8); }
+    .logo h3 { color:#fff;font-size:17px;font-weight:800;letter-spacing:1px; }
+
+    /* Hamburger */
+    #hamburger {
+      display:none; flex-direction:column; gap:5px; cursor:pointer;
+      padding:5px; background:none; border:none; flex-shrink:0;
+    }
+    #hamburger span { display:block;width:24px;height:3px;background:#fff;border-radius:3px;transition:0.3s; }
+    #hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,6px)}
+    #hamburger.open span:nth-child(2){opacity:0}
+    #hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-6px)}
+
+    /* Nav Drawer */
+    #navDrawer {
+      display:flex; align-items:center; flex-wrap:wrap; gap:4px;
+    }
+    nav { display:flex; flex-wrap:wrap; gap:4px; }
+    nav a.link {
+      padding:7px 13px; border-radius:20px; color:#fff;
+      text-decoration:none; font-size:13px; font-weight:600;
+      transition:0.2s; border:2px solid transparent; white-space:nowrap;
+    }
+    nav a.link.active, nav a.link:hover { background:#d8f3dc; color:#00a651; }
+    .admin-nav-link { display:none !important; }
+    .admin-nav-link.show { display:inline-block !important; }
+
+    /* FB Button */
+    #fbNavBtn {
+      display:flex; align-items:center; gap:7px;
+      padding:8px 13px; border-radius:20px;
+      background:#1877F2; color:#fff;
+      border:none; font-size:13px; font-weight:700;
+      cursor:pointer; white-space:nowrap; transition:0.2s; flex-shrink:0;
+    }
+    #fbNavBtn:hover{background:#0d5dba;}
+    #fbNavBtn:active{transform:scale(0.97);}
+    #fbNavBtn svg{width:17px;height:17px;fill:#fff;flex-shrink:0;}
+
+    /* User Info */
+    #userInfo {
+      display:none; align-items:center; gap:7px;
+      background:rgba(255,255,255,0.18); border-radius:20px;
+      padding:5px 11px 5px 6px; flex-shrink:0;
+    }
+    #userInfo.show{display:flex;}
+    #fbAvatar{width:27px;height:27px;border-radius:50%;border:2px solid #fff;}
+    #fbNameSpan{color:#fff;font-size:13px;font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    #logoutBtn{background:rgba(255,255,255,0.25);border:none;color:#fff;padding:3px 9px;border-radius:10px;font-size:11px;cursor:pointer;transition:0.2s;}
+    #logoutBtn:hover{background:rgba(255,255,255,0.4);}
+
+    /* Mobile nav */
+    @media(max-width:660px){
+      #hamburger{display:flex;}
+      #navDrawer{
+        display:none; position:absolute; top:58px; left:0; right:0;
+        background:#009647; flex-direction:column; align-items:flex-start;
+        padding:14px 18px; gap:6px; z-index:999;
+        box-shadow:0 8px 24px rgba(0,0,0,0.15); animation:fade 0.25s;
+      }
+      #navDrawer.open{display:flex;}
+      nav{flex-direction:column;width:100%;}
+      nav a.link{width:100%;padding:10px 14px;font-size:14px;}
+      #fbNavBtn,#userInfo{width:100%;}
+    }
+
+    /* ===== TABS ===== */
+    .tab{display:none;padding:26px 16px;flex:1;}
+    .tab.active{display:flex;flex-direction:column;animation:fade 0.4s;}
+
+    /* ===== HERO ===== */
+    .hero{text-align:center;padding:28px 10px 10px;}
+    .big{
+      font-size:clamp(50px,15vw,108px); font-weight:900; color:#00a651; display:block;
+      text-shadow:0 0 12px #00ff88,0 0 28px #00ff88,3px 3px 0 #fff;
+      line-height:1.05; letter-spacing:-2px;
+    }
+
+    /* ===== INPUTS ===== */
+    input[type=text],input[type=password],textarea,select{
+      padding:12px 14px; border:1.5px solid #d8f3dc; border-radius:12px;
+      font-size:14px; outline:none; width:100%; transition:0.25s;
+      background:#fff; -webkit-appearance:none;
+    }
+    input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:#00a651;}
+    textarea{resize:vertical;}
+
+    /* ===== BUTTONS ===== */
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:5px;
+      padding:11px 22px; border:none; border-radius:22px;
+      background:#00a651; color:#fff; cursor:pointer;
+      font-size:14px; font-weight:700; white-space:nowrap;
+      transition:0.2s; box-shadow:0 0 12px rgba(0,255,136,0.3);
+      -webkit-appearance:none;
+    }
+    .btn:hover{transform:scale(1.05);box-shadow:0 0 22px rgba(0,255,136,0.7);}
+    .btn:active{transform:scale(0.97);}
+    .btn.sm{padding:8px 16px;font-size:13px;border-radius:16px;}
+    .btn.danger{background:#e74c3c;box-shadow:0 0 10px rgba(231,76,60,0.3);}
+    .btn.danger:hover{box-shadow:0 0 20px rgba(231,76,60,0.7);}
+    .btn.grey{background:#607d8b;box-shadow:none;}
+    .btn.grey:hover{box-shadow:0 0 14px rgba(96,125,139,0.5);}
+
+    /* ===== CARD ===== */
+    .card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 24px rgba(0,166,81,0.12);}
+
+    /* ===== GAME BOX ===== */
+    .game-box{max-width:520px;width:100%;margin:0 auto;}
+    .timer-bar{height:8px;background:#00a651;border-radius:6px;margin-bottom:14px;transition:width 0.3s;}
+    .timer-bar.danger{background:#ff4d4d;box-shadow:0 0 10px red;}
+    #progress{font-size:13px;color:#888;margin-bottom:8px;}
+    #q{font-size:16px;font-weight:700;color:#1b4332;margin-bottom:14px;line-height:1.6;}
+    .answers button{
+      display:block;width:100%;margin:9px 0;padding:12px 14px;
+      border:none;border-radius:12px;background:#52b788;color:#fff;
+      cursor:pointer;font-size:14px;font-weight:600;text-align:left;
+      transition:0.2s;-webkit-appearance:none;
+    }
+    .answers button:hover{background:#40916c;}
+    .answers button:active{transform:scale(0.98);}
+    #score-line{margin-top:12px;font-size:14px;color:#555;font-weight:600;}
+
+    /* ===== LEADERBOARD ===== */
+    .leader-wrap{max-width:420px;margin:0 auto;width:100%;}
+    #leaderboard{list-style:none;padding:0;margin:12px 0;}
+    #leaderboard li{
+      background:#fff;margin:7px 0;padding:12px 16px;border-radius:14px;
+      box-shadow:0 3px 12px rgba(0,0,0,0.07);display:flex;align-items:center;gap:10px;transition:0.2s;
+    }
+    #leaderboard li:hover{background:#d8f3dc;transform:scale(1.02);}
+    .rank{font-weight:900;font-size:18px;width:34px;text-align:center;flex-shrink:0;}
+    .pname{flex:1;font-weight:600;font-size:14px;}
+    .pts{font-weight:700;color:#00a651;font-size:14px;}
+    .admin-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+    /* ===== ABOUT / FEEDBACK ===== */
+    .about-box{max-width:680px;margin:0 auto;}
+    .about-box h2{color:#00a651;margin-bottom:10px;}
+    .about-box p{color:#444;line-height:1.7;margin-bottom:6px;}
+    .feedback-section{max-width:680px;margin:16px auto 0;}
+    .feedback-section h3{color:#00a651;margin-bottom:14px;}
+    .feedback-form{display:flex;flex-direction:column;gap:10px;}
+    .feedback-list{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+    .fb-item{background:#f4fcf7;border-left:4px solid #00a651;padding:10px 14px;border-radius:10px;}
+    .fb-item .fb-name{font-weight:700;color:#00a651;margin-bottom:3px;font-size:14px;}
+    .fb-item .fb-msg{color:#444;font-size:14px;}
+    .fb-empty{font-size:13px;color:#aaa;text-align:center;padding:12px 0;}
+    .del-fb{float:right;background:#e74c3c;color:#fff;border:none;border-radius:8px;padding:2px 9px;font-size:12px;cursor:pointer;margin-left:8px;}
+    #feedbackThankYou{color:#999;font-size:13px;margin-top:12px;text-align:center;}
+
+    /* ===== ADMIN ===== */
+    .admin-wrap{max-width:700px;margin:0 auto;width:100%;}
+    .admin-login-form{display:flex;flex-direction:column;gap:12px;max-width:300px;}
+    .q-list{display:flex;flex-direction:column;gap:12px;margin-top:14px;max-height:48vh;overflow-y:auto;}
+    .q-card{background:#f8fcfa;border:1.5px solid #d8f3dc;border-radius:14px;padding:14px;}
+    .q-card .q-num{font-size:12px;color:#888;margin-bottom:5px;}
+    .ans-row{display:flex;gap:8px;align-items:center;margin:5px 0;}
+    .ans-row input[type=text]{flex:1;padding:8px 10px;font-size:13px;border-radius:10px;}
+    .ans-row input[type=radio]{accent-color:#00a651;width:18px;height:18px;flex-shrink:0;cursor:pointer;}
+    .correct-lbl{font-size:12px;color:#555;white-space:nowrap;}
+    .q-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+    #addQForm{background:#f0fbf4;border:1.5px dashed #00a651;border-radius:14px;padding:18px;margin-top:16px;}
+    #addQForm h4{color:#00a651;margin-bottom:14px;}
+    .ans-entry{display:flex;gap:8px;align-items:center;margin-bottom:9px;}
+    .ans-entry input[type=text]{flex:1;}
+    .ans-entry input[type=radio]{accent-color:#00a651;width:18px;height:18px;flex-shrink:0;}
+
+    /* ===== COMPETITION ===== */
+    .comp-wrap{max-width:520px;margin:0 auto;width:100%;}
+    .comp-lobby{text-align:center;}
+    .comp-lobby h2{color:#1b4332;font-size:clamp(19px,6vw,27px);margin-bottom:8px;}
+    .comp-players{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0;}
+    .comp-chip{display:flex;align-items:center;gap:7px;background:#d8f3dc;border-radius:20px;padding:7px 14px;font-weight:600;font-size:13px;color:#1b4332;}
+    .comp-chip img{width:24px;height:24px;border-radius:50%;}
+    .comp-scoreboard{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 18px rgba(0,166,81,0.12);margin-bottom:14px;}
+    .comp-scoreboard h4{color:#00a651;margin-bottom:10px;font-size:15px;}
+    .comp-score-row{display:flex;justify-content:space-between;padding:8px 10px;border-radius:9px;font-size:14px;margin:3px 0;}
+    .comp-score-row.top{background:#d8f3dc;font-weight:700;color:#1b4332;}
+    .comp-status{text-align:center;font-size:15px;font-weight:600;color:#1b4332;margin:12px 0;}
+    .mode-pills{display:flex;gap:10px;justify-content:center;margin:18px 0 20px;flex-wrap:wrap;}
+    .mode-pill{padding:9px 22px;border-radius:22px;cursor:pointer;font-weight:700;font-size:14px;border:2px solid #00a651;color:#00a651;background:#fff;transition:0.2s;}
+    .mode-pill.active,.mode-pill:hover{background:#00a651;color:#fff;}
+
+    /* ===== TOAST ===== */
+    #toast{
+      position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+      background:#1b4332;color:#fff;padding:11px 20px;border-radius:22px;
+      font-size:14px;font-weight:600;z-index:9999;transition:0.35s;
+      pointer-events:none;opacity:0;max-width:90vw;text-align:center;
+      box-shadow:0 6px 22px rgba(0,0,0,0.25);
+    }
+    #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+    footer{text-align:center;padding:14px 20px;background:#00a651;color:rgba(255,255,255,0.85);font-size:12px;margin-top:auto;}
+    .sec-title{font-size:clamp(17px,5vw,23px);font-weight:800;color:#1b4332;margin-bottom:6px;}
+    .sec-sub{font-size:13px;color:#666;margin-bottom:14px;}
+    hr.div{border:none;border-top:1.5px solid #d8f3dc;margin:18px 0;}
+    .row-btns{display:flex;gap:10px;flex-wrap:wrap;}
+
+    @media(max-width:480px){
+      .tab{padding:18px 12px;}
+      .card{padding:15px;}
+      .btn{padding:10px 18px;font-size:13px;}
+      #q{font-size:15px;}
+      .answers button{font-size:13px;padding:11px 12px;}
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div id="toast"></div>
+
+<!-- ===== NAVBAR ===== -->
+<header class="navbar">
+  <div class="logo">
+    <img src="logo.png" alt="Minsu" onerror="this.style.display='none'">
+    <h3>Minsu</h3>
+  </div>
+
+  <button id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div id="navDrawer">
+    <nav>
+      <a class="link active" data-tab="home">🏠 Home</a>
+      <a class="link" data-tab="about">ℹ️ About</a>
+      <a class="link" data-tab="leader">🏆 Scores</a>
+      <a class="link" data-tab="comp">⚔️ Compete</a>
+      <a class="link admin-nav-link" data-tab="admin">🔑 Admin</a>
+    </nav>
+    <button id="fbNavBtn" onclick="fbLogin()">
+      <svg viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+      Facebook Login
+    </button>
+    <div id="userInfo">
+      <img id="fbAvatar" src="" alt="avatar">
+      <span id="fbNameSpan"></span>
+      <button id="logoutBtn" onclick="fbLogout()">Logout</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== HOME ===== -->
+<section id="home" class="tab active">
+  <div class="hero">
+    <span class="big">MINI GAME</span>
+    <div id="welcomeMsg" style="display:none;margin-top:14px;font-size:15px;font-weight:700;color:#1b4332;">
+      👋 Welcome, <span id="welcomeName" style="color:#00a651;"></span>!
+    </div>
+    <div style="margin-top:22px;max-width:280px;margin-left:auto;margin-right:auto;">
+      <input id="playerName" type="text" placeholder="Enter your name" maxlength="30">
+    </div>
+    <div class="mode-pills">
+      <div class="mode-pill active" id="modeSolo" onclick="setMode('solo')">🎮 Solo</div>
+      <div class="mode-pill" id="modeComp" onclick="setMode('comp')">⚔️ Competition</div>
+    </div>
+    <button class="btn" onclick="startGame()" style="font-size:15px;padding:12px 32px;">▶ Start Game</button>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about" class="tab">
+  <div class="about-box card">
+    <h2>About Minsu Quiz</h2>
+    <p>Created by: <strong>Jhon Benedict Zulueta</strong> and <strong>JohnPaul Songco</strong></p>
+    <p>A Filipino linguistics quiz game that combines learning and programming.</p>
+  </div>
+  <div class="feedback-section card" style="margin-top:14px;">
+    <h3>💬 Leave Feedback</h3>
+    <div class="feedback-form">
+      <input id="feedbackName" type="text" placeholder="Your name" maxlength="30">
+      <textarea id="feedbackMsg" rows="3" placeholder="Write your feedback here..."></textarea>
+      <button class="btn sm" onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+    <div id="adminFbView" style="display:none;">
+      <hr class="div">
+      <h4 style="color:#00a651;margin-bottom:10px;">📋 Feedbacks (Admin Only)</h4>
+      <div class="feedback-list" id="feedbackList"></div>
+    </div>
+    <p id="feedbackThankYou">Feedback is reviewed by the admin only.</p>
+  </div>
+</section>
+
+<!-- ===== PLAY ===== -->
+<section id="play" class="tab">
+  <div class="game-box card" id="gameBox">
+    <div class="timer-bar" id="bar"></div>
+    <p id="progress"></p>
+    <h3 id="q"></h3>
+    <div class="answers" id="ans"></div>
+    <p id="score-line">Score: <strong id="score">0</strong></p>
+  </div>
+</section>
+
+<!-- ===== COMPETITION ===== -->
+<section id="comp" class="tab">
+  <div class="comp-wrap">
+    <div id="compLobby" class="comp-lobby">
+      <h2>⚔️ Competition Mode</h2>
+      <p style="color:#555;font-size:14px;margin-bottom:18px;">Race against others! Mag-login sa Facebook para makasali.</p>
+      <div id="compNeedLogin">
+        <p style="color:#e74c3c;font-weight:700;margin-bottom:12px;">⚠️ Login with Facebook first</p>
+        <button class="btn" onclick="fbLogin()">
+          <svg viewBox="0 0 24 24" style="width:17px;height:17px;fill:#fff;flex-shrink:0;"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          Login with Facebook
+        </button>
+      </div>
+      <div id="compReady" style="display:none;">
+        <p style="font-size:14px;color:#1b4332;font-weight:700;margin-bottom:10px;">
+          Playing as: <span id="compPlayerName" style="color:#00a651;"></span>
+        </p>
+        <div class="comp-players" id="compChips"></div>
+        <div class="comp-scoreboard">
+          <h4>🏆 Session Scoreboard</h4>
+          <div id="lobbyRows"></div>
+        </div>
+        <div class="row-btns" style="justify-content:center;margin-top:4px;">
+          <button class="btn" onclick="startComp()">🚀 Start Competition</button>
+          <button class="btn grey sm" onclick="clearCP()">🔄 Reset</button>
+        </div>
+      </div>
+    </div>
+    <div id="compGameArea" style="display:none;">
+      <div class="comp-scoreboard">
+        <h4>🏆 Live Scoreboard</h4>
+        <div id="liveRows"></div>
+      </div>
+      <p class="comp-status" id="compStatus"></p>
+      <div class="game-box card" id="compGameBox">
+        <div class="timer-bar" id="compBar"></div>
+        <p id="compProgress"></p>
+        <h3 id="compQ"></h3>
+        <div class="answers" id="compAns"></div>
+        <p id="score-line">Score: <strong id="compScore">0</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LEADERBOARD ===== -->
+<section id="leader" class="tab">
+  <div class="leader-wrap">
+    <p class="sec-title">🏆 Leaderboard</p>
+    <p class="sec-sub">Top players all-time</p>
+    <ul id="leaderboard"></ul>
+    <div class="admin-controls">
+      <button class="btn sm grey" onclick="goTab('admin')">🔑 Admin</button>
+      <button class="btn sm danger" id="adminResetBtn" onclick="adminReset()" style="display:none;">🗑 Reset</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ADMIN ===== -->
+<section id="admin" class="tab">
+  <div class="admin-wrap">
+    <div id="adminGate" class="card">
+      <h2 style="color:#00a651;margin-bottom:16px;">🔑 Admin Login</h2>
+      <div class="admin-login-form">
+        <input type="password" id="adminPass" placeholder="Password" onkeyup="if(event.key==='Enter')doAdminLogin()">
+        <button class="btn" onclick="doAdminLogin()">Login</button>
+      </div>
+    </div>
+    <div id="adminDash" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
+        <h2 style="color:#00a651;font-size:19px;">🛠 Admin Dashboard</h2>
+        <div class="row-btns">
+          <button class="btn sm danger" onclick="adminReset()">🗑 Reset Scores</button>
+          <button class="btn sm grey" onclick="adminLogout()">Logout</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="color:#00a651;margin-bottom:12px;">💬 User Feedbacks</h3>
+        <div class="feedback-list" id="adminFbList"></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+          <h3 style="color:#00a651;">📝 Question Manager</h3>
+          <button class="btn sm grey" onclick="shuffleAllAnswers()">🔀 Shuffle All</button>
+        </div>
+        <p style="font-size:12px;color:#888;margin-bottom:10px;">Select ✓ = correct answer. Hit Save after editing.</p>
+        <div class="q-list" id="qList"></div>
+        <div id="addQForm">
+          <h4>➕ Add New Question</h4>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:13px;font-weight:600;color:#1b4332;display:block;margin-bottom:6px;">Question</label>
+            <input type="text" id="newQText" placeholder="Enter question text...">
+          </div>
+          <label style="font-size:13px;font-weight:600;color:#1b4332;display:block;margin-bottom:8px;">Answers (select ✓ = correct)</label>
+          <div id="newAnsFields"></div>
+          <div class="row-btns" style="margin-top:12px;">
+            <button class="btn sm" onclick="addQuestion()">✅ Add Question</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 · Minsu Mini Game Quiz · Jhon Benedict Zulueta &amp; JohnPaul Songco</p>
+</footer>
+
+<!-- ===== FACEBOOK SDK (TUNAY) ===== -->
+<!--
+  PARA SA TUNAY NA FB LOGIN — SUNDAN ITO:
+  =========================================
+  1. Pumunta sa: https://developers.facebook.com/apps
+  2. Click "Create App" → piliin "Consumer" → Next
+  3. Ilagay ang App Name (e.g. "Minsu Quiz") → Create App
+  4. Sa dashboard, click "Add Product" → hanapin "Facebook Login" → Setup
+  5. Sa Facebook Login > Settings:
+     - Valid OAuth Redirect URIs: ilagay ang link ng iyong website (kailangan HTTPS)
+     - Halimbawa: https://yourdomain.com/index.html
+  6. Sa App Settings > Basic: kopyahin ang "App ID"
+  7. Palitan ang 'YOUR_FB_APP_ID' sa ibaba ng iyong App ID
+  8. I-host ang site sa HTTPS (Facebook requirement)
+  9. Para sa Live mode: i-submit ang app para sa review ng Facebook
+  =========================================
+-->
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId   : 'YOUR_FB_APP_ID',  // <-- PALITAN NG IYONG APP ID MULA SA developers.facebook.com
+      cookie  : true,
+      xfbml   : true,
+      version : 'v19.0'
+    });
+    // Auto-restore session pagkatapos ng page reload
+    FB.getLoginStatus(function(response) {
+      if (response.status === 'connected') {
+        fetchFBProfile();
+      }
+    });
+  };
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_PH/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+const ADMIN_PASS = 'admin123'; // I-change para mas ligtas!
+let isAdmin  = false;
+let fbUser   = null;
+let gameMode = 'solo';
+
+/* ============================================================
+   QUESTIONS
+   ============================================================ */
+const defaultQs = [
+  {q:"Ano ang tawag sa pinakamaliit na yunit ng wika?",                   a:["Ponema","Morpema","Sintaks","Diskurso"],                                                         c:0},
+  {q:"Ano ang pag-aaral ng kahulugan ng salita?",                         a:["Ponolohiya","Semantika","Sintaks","Pragmatika"],                                                 c:1},
+  {q:"Ano ang ayos ng pangungusap?",                                       a:["Sintaks","Diskurso","Ponema","Morpema"],                                                         c:0},
+  {q:"Ano ang paraan ng pagbuo ng salita?",                                a:["Morpolohiya","Sintaks","Semantika","Ponolohiya"],                                                c:0},
+  {q:"Ano ang tawag sa pangungusap na nagbibigay utos?",                   a:["Pautos","Patanong","Padamdam","Pasalaysay"],                                                     c:0},
+  {q:"Ano ang pokus ng pandiwa na tumutukoy sa simuno?",                   a:["Pokus ng Aktor","Pokus ng Layon","Pokus ng Tagatanggap","Pokus ng Ganapan"],                     c:0},
+  {q:"Ano ang tawag sa pag-aaral ng tunog ng wika?",                       a:["Ponolohiya","Semantika","Morpema","Sintaks"],                                                    c:0},
+  {q:"Ano ang tawag sa pag-aaral ng kaayusan ng salita at pangungusap?",   a:["Sintaks","Semantika","Ponolohiya","Pragmatika"],                                                 c:0},
+  {q:"Ano ang tawag sa paggamit ng wika sa lipunan?",                      a:["Pragmatika","Ponolohiya","Morpolohiya","Diskurso"],                                              c:0},
+  {q:"Ano ang tawag sa pinakamalawak na yunit ng wika?",                   a:["Diskurso","Sintaks","Ponema","Morpema"],                                                         c:0},
+  {q:"Ano ang tawag sa salita o yunit na may kahulugan?",                  a:["Morpema","Ponema","Sintaks","Diskurso"],                                                         c:0},
+  {q:"Ano ang gamit ng pandiwa sa pangungusap?",                           a:["Nagpapahayag ng kilos","Nagpapakita ng tunog","Nagpapakita ng ayos","Nagpapahayag ng diskurso"],c:0},
+  {q:"Ano ang tawag sa tanong na pangungusap?",                            a:["Patanong","Pautos","Pasalaysay","Padamdam"],                                                     c:0},
+  {q:"Ano ang tawag sa pangungusap na nagpapahayag ng damdamin?",          a:["Padamdam","Pasalaysay","Pautos","Patanong"],                                                     c:0},
+  {q:"Ano ang tawag sa pangungusap na nagsasalaysay?",                     a:["Pasalaysay","Padamdam","Pautos","Patanong"],                                                     c:0}
+];
+function getQs(){try{const s=localStorage.getItem('quizQs');return s?JSON.parse(s):defaultQs;}catch(e){return defaultQs;}}
+function saveQs(a){localStorage.setItem('quizQs',JSON.stringify(a));}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+function toggleMenu(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('navDrawer').classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navDrawer').classList.remove('open');
+}
+document.querySelectorAll('.link').forEach(l=>{
+  l.onclick=()=>{
+    document.querySelectorAll('.link').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    l.classList.add('active');
+    document.getElementById(l.dataset.tab).classList.add('active');
+    closeMenu(); window.scrollTo(0,0);
+  };
+});
+function goTab(id){
+  document.querySelectorAll('.link').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  const lnk=document.querySelector(`.link[data-tab="${id}"]`);
+  if(lnk)lnk.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  closeMenu(); window.scrollTo(0,0);
+}
+
+/* ============================================================
+   PARTICLES
+   ============================================================ */
+const cvs=document.getElementById('particles'),ctx=cvs.getContext('2d');
+function rsz(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
+rsz(); window.addEventListener('resize',rsz);
+const pts=Array.from({length:55},()=>({x:Math.random()*cvs.width,y:Math.random()*cvs.height,r:Math.random()*3+1,dx:Math.random()-.5,dy:Math.random()-.5}));
+(function loop(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,166,81,0.2)';ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>cvs.width)p.dx*=-1;if(p.y<0||p.y>cvs.height)p.dy*=-1;});
+  requestAnimationFrame(loop);
+})();
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let tT;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),2800);}
+
+/* ============================================================
+   SOUNDS
+   ============================================================ */
+const sOk=new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3');
+const sBad=new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
+
+/* ============================================================
+   FACEBOOK LOGIN — TUNAY (gamit ang Official FB JS SDK)
+   ============================================================ */
+function fbLogin(){
+  if(typeof FB==='undefined'){
+    toast('⚠️ FB SDK hindi pa na-load. Siguraduhing may valid App ID ka at naka-HTTPS ang site.');
+    return;
+  }
+  FB.login(function(res){
+    if(res.authResponse){
+      fetchFBProfile();
+    } else {
+      toast('❌ Facebook login cancelled o denied.');
+    }
+  },{scope:'public_profile'});
+}
+
+function fetchFBProfile(){
+  // Kukunin: id, name, at profile picture (large)
+  FB.api('/me',{fields:'id,name,picture.type(large)'},function(res){
+    if(!res||res.error){toast('❌ Hindi makuha ang FB profile. Subukan ulit.');return;}
+    fbUser={
+      id    : res.id,
+      name  : res.name,
+      avatar: (res.picture&&res.picture.data)?res.picture.data.url:''
+    };
+    applyFBUser();
+  });
+}
+
+function applyFBUser(){
+  // Navbar: itago ang FB button, ipakita ang user info
+  document.getElementById('fbNavBtn').style.display='none';
+  const ui=document.getElementById('userInfo');
+  ui.classList.add('show');
+  if(fbUser.avatar){
+    document.getElementById('fbAvatar').src=fbUser.avatar;
+  } else {
+    document.getElementById('fbAvatar').style.display='none';
+  }
+  document.getElementById('fbNameSpan').textContent=fbUser.name;
+
+  // Home: pre-fill name, welcome message
+  document.getElementById('playerName').value=fbUser.name;
+  document.getElementById('welcomeName').textContent=fbUser.name;
+  document.getElementById('welcomeMsg').style.display='block';
+
+  // Competition tab
+  document.getElementById('compNeedLogin').style.display='none';
+  document.getElementById('compReady').style.display='block';
+  document.getElementById('compPlayerName').textContent=fbUser.name;
+
+  registerCP();
+  refreshLobby();
+  toast('✅ Naka-login bilang '+fbUser.name);
+}
+
+function fbLogout(){
+  fbUser=null;
+  document.getElementById('fbNavBtn').style.display='flex';
+  document.getElementById('userInfo').classList.remove('show');
+  document.getElementById('welcomeMsg').style.display='none';
+  document.getElementById('compNeedLogin').style.display='block';
+  document.getElementById('compReady').style.display='none';
+  document.getElementById('fbAvatar').style.display='inline-block';
+  if(typeof FB!=='undefined') FB.logout(function(){});
+  toast('👋 Naka-logout na.');
+}
+
+/* ============================================================
+   GAME MODE
+   ============================================================ */
+function setMode(m){
+  gameMode=m;
+  document.getElementById('modeSolo').classList.toggle('active',m==='solo');
+  document.getElementById('modeComp').classList.toggle('active',m==='comp');
+}
+
+/* ============================================================
+   SOLO GAME
+   ============================================================ */
+let qs=[],qi=0,sc=0,tmr=null,tL=10,player='';
+function shArr(a){return[...a].sort(()=>Math.random()-.5);}
+function mkQ(q){
+  const p=q.a.map((a,i)=>({a,ok:i===q.c})),s=shArr(p);
+  return{q:q.q,a:s.map(x=>x.a),c:s.findIndex(x=>x.ok)};
+}
+
+function startGame(){
+  player=document.getElementById('playerName').value.trim();
+  if(!player&&fbUser)player=fbUser.name;
+  if(!player)return toast('⚠️ Ilagay ang iyong pangalan!');
+  if(gameMode==='comp'){
+    if(!fbUser)return toast('⚠️ Mag-login muna sa Facebook para sa Competition!');
+    goTab('comp');startComp();return;
+  }
+  qs=shArr(getQs()).slice(0,15).map(mkQ);
+  qi=0;sc=0;
+  document.getElementById('score').textContent=0;
+  goTab('play');loadQ();
+}
+
+function loadQ(){
+  clearInterval(tmr);tL=10;
+  const b=document.getElementById('bar');
+  b.style.width='100%';b.classList.remove('danger');
+  document.getElementById('q').textContent=qs[qi].q;
+  document.getElementById('progress').textContent=`Tanong ${qi+1} / ${qs.length}`;
+  const ans=document.getElementById('ans');ans.innerHTML='';
+  qs[qi].a.forEach((c,i)=>{const b=document.createElement('button');b.textContent=c;b.onclick=()=>chk(i,b);ans.appendChild(b);});
+  tmr=setInterval(()=>{tL--;document.getElementById('bar').style.width=(tL*10)+'%';if(tL<=3){document.getElementById('bar').classList.add('danger');shk('gameBox');}if(tL<=0)nxtQ();},1000);
+}
+
+function chk(i,btn){
+  clearInterval(tmr);
+  if(i===qs[qi].c){sc++;btn.style.background='#00e87a';sOk.play();}
+  else{btn.style.background='#ff4d4d';sBad.play();}
+  document.getElementById('score').textContent=sc;
+  document.getElementById('ans').querySelectorAll('button').forEach((b,j)=>{if(j===qs[qi].c)b.style.background='#00e87a';b.disabled=true;});
+  setTimeout(nxtQ,700);
+}
+
+function nxtQ(){
+  qi++;
+  if(qi<qs.length){loadQ();}
+  else{clearInterval(tmr);saveSc(player,sc);toast(`🎉 Tapos na! Score: ${sc}/${qs.length}`);setTimeout(()=>goTab('leader'),1200);}
+}
+
+function shk(id){const e=document.getElementById(id);e.classList.add('shake');setTimeout(()=>e.classList.remove('shake'),300);}
+
+/* ============================================================
+   COMPETITION
+   ============================================================ */
+let cqs=[],cqi=0,csc=0,ctmr=null,cL=10;
+function getCP(){try{return JSON.parse(localStorage.getItem('compPlayers'))||[];}catch(e){return[];}}
+function saveCP(a){localStorage.setItem('compPlayers',JSON.stringify(a));}
+function registerCP(){
+  if(!fbUser)return;
+  let cp=getCP();
+  if(!cp.find(p=>p.id===fbUser.id)){cp.push({id:fbUser.id,name:fbUser.name,avatar:fbUser.avatar,score:0,done:false});saveCP(cp);}
+}
+function clearCP(){localStorage.removeItem('compPlayers');refreshLobby();toast('🔄 Session reset!');}
+
+function refreshLobby(){
+  const cp=[...getCP()].sort((a,b)=>b.score-a.score);
+  const chips=document.getElementById('compChips');
+  chips.innerHTML='';
+  cp.forEach(p=>{const d=document.createElement('div');d.className='comp-chip';d.innerHTML=`${p.avatar?`<img src="${p.avatar}" alt="">`:''}${p.name}`;chips.appendChild(d);});
+  const rows=document.getElementById('lobbyRows');
+  rows.innerHTML='';
+  cp.forEach((p,i)=>{const d=document.createElement('div');d.className='comp-score-row'+(i===0?' top':'');d.innerHTML=`<span>${i===0?'👑 ':''}${p.name}${p.done?' ✅':''}</span><span>${p.score} pts</span>`;rows.appendChild(d);});
+}
+
+function startComp(){
+  if(!fbUser){toast('⚠️ Mag-login sa Facebook muna!');return;}
+  registerCP();
+  cqs=shArr(getQs()).slice(0,10).map(mkQ);
+  cqi=0;csc=0;
+  document.getElementById('compScore').textContent=0;
+  document.getElementById('compLobby').style.display='none';
+  document.getElementById('compGameArea').style.display='block';
+  updLive();loadCQ();
+}
+
+function loadCQ(){
+  clearInterval(ctmr);cL=10;
+  const b=document.getElementById('compBar');b.style.width='100%';b.classList.remove('danger');
+  document.getElementById('compQ').textContent=cqs[cqi].q;
+  document.getElementById('compProgress').textContent=`Tanong ${cqi+1} / ${cqs.length}`;
+  document.getElementById('compStatus').textContent='⏱ Sagutin bago maubos ang oras!';
+  const ans=document.getElementById('compAns');ans.innerHTML='';
+  cqs[cqi].a.forEach((c,i)=>{const b=document.createElement('button');b.textContent=c;b.onclick=()=>chkC(i,b);ans.appendChild(b);});
+  ctmr=setInterval(()=>{cL--;document.getElementById('compBar').style.width=(cL*10)+'%';if(cL<=3){document.getElementById('compBar').classList.add('danger');shk('compGameBox');}if(cL<=0)nxtCQ();},1000);
+}
+
+function chkC(i,btn){
+  clearInterval(ctmr);
+  if(i===cqs[cqi].c){csc++;btn.style.background='#00e87a';sOk.play();document.getElementById('compStatus').textContent='✅ Tama!';}
+  else{btn.style.background='#ff4d4d';sBad.play();document.getElementById('compStatus').textContent='❌ Mali!';}
+  document.getElementById('compScore').textContent=csc;
+  document.getElementById('compAns').querySelectorAll('button').forEach((b,j)=>{if(j===cqs[cqi].c)b.style.background='#00e87a';b.disabled=true;});
+  updMyScore(csc);updLive();setTimeout(nxtCQ,700);
+}
+
+function nxtCQ(){
+  cqi++;
+  if(cqi<cqs.length){loadCQ();}
+  else{
+    clearInterval(ctmr);markDone(csc);updLive();saveSc(fbUser.name,csc);
+    document.getElementById('compStatus').textContent=`🏁 Tapos! Score: ${csc}/${cqs.length}`;
+    toast(`🏆 Competition done! Score: ${csc}/${cqs.length}`);
+    setTimeout(()=>{document.getElementById('compLobby').style.display='block';document.getElementById('compGameArea').style.display='none';refreshLobby();goTab('leader');},2000);
+  }
+}
+
+function updMyScore(s){const cp=getCP(),me=cp.find(p=>p.id===fbUser.id);if(me)me.score=s;saveCP(cp);}
+function markDone(s){const cp=getCP(),me=cp.find(p=>p.id===fbUser.id);if(me){me.score=s;me.done=true;}saveCP(cp);}
+function updLive(){
+  const cp=[...getCP()].sort((a,b)=>b.score-a.score);
+  const rows=document.getElementById('liveRows');rows.innerHTML='';
+  cp.forEach((p,i)=>{const d=document.createElement('div');d.className='comp-score-row'+(i===0?' top':'');d.innerHTML=`<span>${i===0?'👑 ':''}${p.name}${p.done?' ✅':''}</span><span>${p.score} pts</span>`;rows.appendChild(d);});
+}
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+function saveSc(name,score){
+  const d=JSON.parse(localStorage.getItem('scores'))||[];
+  const ex=d.find(p=>p.name.toLowerCase()===name.toLowerCase());
+  if(ex){if(score>ex.score)ex.score=score;}else d.push({name,score});
+  localStorage.setItem('scores',JSON.stringify(d));loadBoard();
+}
+function loadBoard(){
+  const d=(JSON.parse(localStorage.getItem('scores'))||[]).sort((a,b)=>b.score-a.score);
+  const list=document.getElementById('leaderboard');list.innerHTML='';
+  const m=['🥇','🥈','🥉'];
+  d.forEach((p,i)=>{const li=document.createElement('li');li.innerHTML=`<span class="rank">${m[i]||'#'+(i+1)}</span><span class="pname">${p.name}</span><span class="pts">${p.score} pts</span>`;list.appendChild(li);});
+}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+function doAdminLogin(){
+  if(document.getElementById('adminPass').value===ADMIN_PASS){
+    isAdmin=true;
+    document.getElementById('adminGate').style.display='none';
+    document.getElementById('adminDash').style.display='block';
+    document.querySelector('.admin-nav-link').classList.add('show');
+    document.getElementById('adminResetBtn').style.display='inline-flex';
+    document.getElementById('adminFbView').style.display='block';
+    document.getElementById('feedbackThankYou').style.display='none';
+    loadFbList();loadAdminFbList();renderQList();renderNewAnsFields();
+    toast('✅ Admin login successful!');
+  } else {
+    toast('❌ Maling password!');
+    document.getElementById('adminPass').value='';
+  }
+}
+function adminLogout(){
+  isAdmin=false;
+  document.getElementById('adminGate').style.display='block';
+  document.getElementById('adminDash').style.display='none';
+  document.querySelector('.admin-nav-link').classList.remove('show');
+  document.getElementById('adminResetBtn').style.display='none';
+  document.getElementById('adminFbView').style.display='none';
+  document.getElementById('feedbackThankYou').style.display='block';
+  document.getElementById('adminPass').value='';
+  goTab('home');toast('Logged out sa admin.');
+}
+function adminReset(){
+  if(!confirm('Reset lahat ng scores?'))return;
+  localStorage.removeItem('scores');loadBoard();toast('🗑 Scores na-reset!');
+}
+
+/* ============================================================
+   ADMIN: QUESTION MANAGER
+   ============================================================ */
+function renderQList(){
+  const qArr=getQs(),div=document.getElementById('qList');div.innerHTML='';
+  qArr.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='q-card';
+    let aHtml=q.a.map((a,ai)=>`
+      <div class="ans-row">
+        <input type="radio" name="cr_${qi}" value="${ai}" id="cr_${qi}_${ai}" ${q.c===ai?'checked':''}>
+        <label for="cr_${qi}_${ai}" class="correct-lbl">✓</label>
+        <input type="text" id="qa_${qi}_${ai}" value="${a}" placeholder="Answer ${ai+1}">
+      </div>`).join('');
+    card.innerHTML=`<div class="q-num">Q${qi+1}</div>
+      <input type="text" style="font-size:13px;margin-bottom:8px;" id="qt_${qi}" value="${q.q}" placeholder="Tanong...">
+      ${aHtml}
+      <div class="q-actions">
+        <button class="btn sm" onclick="saveQ(${qi})">💾 Save</button>
+        <button class="btn sm grey" onclick="shfQ(${qi})">🔀 Shuffle</button>
+        <button class="btn sm danger" onclick="delQ(${qi})">🗑</button>
+      </div>`;
+    div.appendChild(card);
+  });
+}
+function saveQ(qi){
+  const qArr=getQs();
+  qArr[qi].q=document.getElementById(`qt_${qi}`).value.trim();
+  qArr[qi].a=qArr[qi].a.map((_,ai)=>document.getElementById(`qa_${qi}_${ai}`).value.trim());
+  const ch=document.querySelector(`input[name="cr_${qi}"]:checked`);
+  qArr[qi].c=ch?parseInt(ch.value):0;
+  saveQs(qArr);renderQList();toast('✅ Nasave!');
+}
+function delQ(qi){
+  if(!confirm('Delete this question?'))return;
+  const qArr=getQs();qArr.splice(qi,1);saveQs(qArr);renderQList();toast('🗑 Deleted.');
+}
+function shfQ(qi){
+  const qArr=getQs(),p=qArr[qi].a.map((a,i)=>({a,ok:i===qArr[qi].c})),s=shArr(p);
+  qArr[qi].a=s.map(x=>x.a);qArr[qi].c=s.findIndex(x=>x.ok);
+  saveQs(qArr);renderQList();toast(`🔀 Shuffled Q${qi+1}`);
+}
+function shuffleAllAnswers(){
+  let qArr=getQs();
+  qArr=qArr.map(q=>{const p=q.a.map((a,i)=>({a,ok:i===q.c})),s=shArr(p);return{q:q.q,a:s.map(x=>x.a),c:s.findIndex(x=>x.ok)};});
+  saveQs(qArr);renderQList();toast('🔀 Lahat na-shuffle!');
+}
+function renderNewAnsFields(){
+  const w=document.getElementById('newAnsFields');w.innerHTML='';
+  for(let i=0;i<4;i++)w.innerHTML+=`<div class="ans-entry"><input type="radio" name="newC" value="${i}" id="nc_${i}" ${i===0?'checked':''}><label for="nc_${i}" style="font-size:13px;white-space:nowrap;">✓</label><input type="text" id="na_${i}" placeholder="Answer ${i+1}"></div>`;
+}
+function addQuestion(){
+  const qt=document.getElementById('newQText').value.trim();
+  if(!qt)return toast('⚠️ Ilagay ang tanong!');
+  const ans=[];
+  for(let i=0;i<4;i++){const v=document.getElementById(`na_${i}`).value.trim();if(!v)return toast(`⚠️ Punan ang Answer ${i+1}!`);ans.push(v);}
+  const c=parseInt(document.querySelector('input[name="newC"]:checked').value);
+  const qArr=getQs();qArr.push({q:qt,a:ans,c});saveQs(qArr);
+  document.getElementById('newQText').value='';renderNewAnsFields();renderQList();
+  toast('✅ Naidagdag ang tanong!');
+}
+
+/* ============================================================
+   FEEDBACK
+   ============================================================ */
+function submitFeedback(){
+  const name=document.getElementById('feedbackName').value.trim();
+  const msg=document.getElementById('feedbackMsg').value.trim();
+  if(!name)return toast('⚠️ Ilagay ang pangalan!');
+  if(!msg)return toast('⚠️ Isulat ang feedback!');
+  const d=JSON.parse(localStorage.getItem('feedbacks'))||[];
+  d.push({name,msg,date:new Date().toLocaleDateString('en-PH')});
+  localStorage.setItem('feedbacks',JSON.stringify(d));
+  document.getElementById('feedbackName').value='';
+  document.getElementById('feedbackMsg').value='';
+  toast('✅ Salamat sa iyong feedback!');
+  if(isAdmin){loadFbList();loadAdminFbList();}
+}
+function getFbs(){return JSON.parse(localStorage.getItem('feedbacks'))||[];}
+function saveFbs(a){localStorage.setItem('feedbacks',JSON.stringify(a));}
+function renderFbTo(listId){
+  const d=getFbs(),el=document.getElementById(listId);el.innerHTML='';
+  if(!d.length){el.innerHTML='<p class="fb-empty">Walang feedback pa.</p>';return;}
+  d.slice().reverse().forEach((f,ri)=>{
+    const idx=d.length-1-ri,dv=document.createElement('div');dv.className='fb-item';
+    dv.innerHTML=`<button class="del-fb" onclick="delFb(${idx})">✕</button><div class="fb-name">${f.name} <span style="font-weight:400;color:#aaa;font-size:12px;">· ${f.date}</span></div><div class="fb-msg">${f.msg}</div>`;
+    el.appendChild(dv);
+  });
+}
+function loadFbList(){renderFbTo('feedbackList');}
+function loadAdminFbList(){renderFbTo('adminFbList');}
+function delFb(idx){const d=getFbs();d.splice(idx,1);saveFbs(d);loadFbList();loadAdminFbList();toast('🗑 Deleted.');}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+loadBoard();
+renderNewAnsFields();
+</script>
+</body>
+</html>
